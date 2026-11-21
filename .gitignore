@@ -1,0 +1,8 @@
+# Temporary files
+*.tmp
+*.log
+.DS_Store
+Thumbs.db
+
+# Root duplicate video (assets/temple-autoplay.mp4 is the active copy used by the site)
+/temple-autoplay.mp4

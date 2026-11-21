@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en" class="intro-locked">
+<head>
+  <style>
+    html.intro-locked,
+    html.intro-locked body {
+      overflow: hidden !important;
+      overscroll-behavior: none;
+    }
+    html.intro-locked body {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  <script>
+    if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+    if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f1eadf">
+  <meta name="description" content="Join the families to celebrate the wedding of Kiran and Megha, 6 December 2026, Delhi.">
+  <title>Kiran &amp; Megha | 6 December 2026</title>
+  <link rel="stylesheet" href="style.css?v=9">
+  <script defer src="app.js?v=9"></script>
+</head>
+<body>
+  <!-- Heart SVG ClipPath for the Scratch Card -->
+  <svg width="0" height="0" aria-hidden="true" style="position:absolute">
+    <defs>
+      <clipPath id="scratch-heart" clipPathUnits="objectBoundingBox">
+        <path d="M .5 .19 C .25 -.12 0 .02 0 .29 C 0 .53 .28 .76 .5 .98 C .72 .76 1 .53 1 .29 C 1 .02 .75 -.12 .5 .19 Z"/>
+      </clipPath>
+    </defs>
+  </svg>
+
+  <main>
+    <!-- Opening Video / Film -->
+    <section class="film" aria-label="Temple wedding invitation film">
+      <div class="film-glow"></div>
+      <div class="film-frame">
+        <video id="temple" autoplay muted playsinline preload="auto" poster="assets/autoplay-poster.jpg" aria-label="Temple lighting wedding invitation">
+          <source src="assets/temple-autoplay.mp4" type="video/mp4">
+        </video>
+        <audio id="music" src="assets/raanjhan-aaya-from-40s.mp3" preload="metadata"></audio>
+        <img id="last-frame" src="assets/opening-final.jpg" alt="The illuminated temple at the end of the wedding film" hidden>
+        <div id="film-message" role="status"></div>
+        <button id="scroll-down" type="button" hidden>Scroll down <span aria-hidden="true">&darr;</span></button>
+      </div>
+    </section>
+
+    <!-- Main Invitation Content (Unlocked after film or scroll) -->
+    <div id="invitation-content" inert aria-hidden="true">
+      <!-- Couple & Blessing Section -->
+      <section id="couple" class="invitation section">
+        <img class="section-divider" src="assets/divider-names.webp" alt="" aria-hidden="true" width="2172" height="724" loading="lazy">
+        <div class="invitation-letter">
+          <img class="blessing-monogram" src="assets/km-monogram.webp" alt="KM Monogram" width="812" height="913">
+          <p class="blessing">&#x0955; &#x0950; &#x0936;&#x094d;&#x0930;&#x0940; &#x0917;&#x0923;&#x0947;&#x0936;&#x093e;&#x092f; &#x0928;&#x092e;&#x0903; &#x0955;</p>
+          <p class="ganesh-verse" lang="hi">&#x0935;&#x093f;&#x0918;&#x094d;&#x0928; &#x0939;&#x0930;&#x0923; &#x092e;&#x0902;&#x0917;&#x0932;&#x0915;&#x0930;&#x0923;, &#x0936;&#x094d;&#x0930;&#x0940; &#x0917;&#x0923;&#x092a;&#x0924;&#x093f; &#x092e;&#x0939;&#x093e;&#x0930;&#x093e;&#x091c;&#x0964; &#x092a;&#x094d;&#x0930;&#x0925;&#x092e; &#x0928;&#x093f;&#x092e;&#x0902;&#x0924;&#x094d;&#x0930;&#x0923; &#x0906;&#x092a;&#x0915;&#x094b;, &#x092a;&#x0942;&#x0930;&#x0923; &#x0915;&#x0940;&#x091c;&#x094b; &#x0915;&#x093e;&#x091c; &#x0955;</p>
+          <p class="host">Mrs. Vidya &amp; Late. Gurunathgouda Odugoudra</p>
+          <p class="invite-line">cordially invites you to grace the auspicious occasion of the</p>
+          <div class="shubh-vivah-badge">
+            <span class="badge-dot">&#x2756;</span>
+            <span>&#x0955; &#x0936;&#x0941;&#x092d; &#x0935;&#x093f;&#x0935;&#x093e;&#x0939; &#x0955;</span>
+            <span class="badge-dot">&#x2756;</span>
+          </div>
+          <h2 class="ceremony-title">Wedding Ceremony</h2>
+          <p class="invite-line">of our beloved daughter</p>
+          <h1 class="bride-name">Megha</h1>
+          <p class="lineage">D/O. Mrs. Vidya &amp; Late. Gurunathgouda Odugoudra</p>
+
+          <div class="celebration-couple-wrapper">
+            <img class="celebration-couple-art" src="assets/celebration-couple.webp" alt="Kiran &amp; Megha Wedding Celebration" width="983" height="1027" loading="lazy">
+          </div>
+
+          <div class="wedding-knot-divider">
+            <span class="knot-line"></span>
+            <div class="knot-badge">
+              <span class="knot-icon">&#x2726;</span>
+              <span class="weds-text">weds</span>
+              <span class="knot-icon">&#x2726;</span>
+            </div>
+            <span class="knot-line"></span>
+          </div>
+
+          <h2 class="groom-name">Kiran</h2>
+          <p class="lineage">S/O. Mrs. Geeta &amp; Late. Pandappa Kagalagomb</p>
+        </div>
+      </section>
+
+      <!-- Scratch Card Date Section -->
+      <section class="date-section section">
+        <img class="section-divider" src="assets/divider-scratch.webp" alt="" aria-hidden="true" width="2172" height="724" loading="lazy">
+        <p class="eyebrow">A DAY TO HOLD CLOSE</p>
+        <h2>A little surprise awaits</h2>
+        <p>Scratch the heart to uncover our special day.</p>
+        <div class="scratch-wrap">
+          <div class="date-reveal" aria-live="polite">
+            <span>SAVE THE DATE</span>
+            <strong>6 December 2026</strong>
+            <span>SUNDAY &middot; SHREE JYOTI KALYAN MANTAPA</span>
+          </div>
+          <canvas id="scratch" aria-label="Scratch with your finger or mouse to reveal the wedding date"></canvas>
+        </div>
+        <button class="text-button" id="reveal">Or tap to reveal the date <span>&#x2197;</span></button>
+      </section>
+
+      <!-- Countdown Timer Section -->
+      <section class="countdown-section section">
+        <img class="section-divider" src="assets/divider-countdown.webp" alt="" aria-hidden="true" width="2172" height="724" loading="lazy">
+        <p class="eyebrow">EVERY MOMENT BRINGS US CLOSER</p>
+        <h2>Until our forever begins</h2>
+        <div class="countdown" role="timer" aria-label="Time until the wedding">
+          <div><strong id="days">&mdash;</strong><span>DAYS</span></div>
+          <i>:</i>
+          <div><strong id="hours">&mdash;</strong><span>HOURS</span></div>
+          <i>:</i>
+          <div><strong id="minutes">&mdash;</strong><span>MINUTES</span></div>
+          <i>:</i>
+          <div><strong id="seconds">&mdash;</strong><span>SECONDS</span></div>
+        </div>
+        <p id="count-note">6 December 2026 &middot; 4:30 PM IST &middot; Delhi</p>
+      </section>
+
+      <!-- Celebrations & Events Grid -->
+      <section id="celebrations" class="celebrations section">
+        <img class="section-divider" src="assets/divider-celebrations.webp" alt="" aria-hidden="true" width="2172" height="724" loading="lazy">
+        <p class="eyebrow">TWO DAYS, COUNTLESS MEMORIES</p>
+        <h2>The celebrations</h2>
+        <p>Come for the rituals. Stay for the memories.</p>
+        <div class="event-grid">
+          <!-- Haldi Ceremony -->
+          <article class="event-entry" id="event-haldi">
+            <div class="event-card">
+              <video class="event-film" loop muted playsinline preload="metadata" poster="assets/haldi-ceremony.jpg?v=5" src="assets/haldi-ceremony.mp4?v=5" aria-hidden="true"></video>
+              <div class="event-transcript">
+                <p>Saturday &middot; 5 December 2026</p>
+                <h3>Get set, glow!</h3>
+                <p>Haldi Ceremony &middot; 11:00 AM onwards</p>
+                <h4>Shree Jyoti Kalyan Mantapa</h4>
+              </div>
+            </div>
+            <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Shree+Jyoti+Kalyan+Mantapa" target="_blank" rel="noopener noreferrer" aria-label="Explore Venue for Haldi Ceremony: Shree Jyoti Kalyan Mantapa">Explore Venue <span aria-hidden="true">&#x2197;</span></a>
+          </article>
+
+          <!-- Ring Exchange Ceremony -->
+          <article class="event-entry" id="event-ring">
+            <div class="event-card">
+              <video class="event-film" loop muted playsinline preload="metadata" poster="assets/ring-ceremony.jpg?v=5" src="assets/ring-ceremony.mp4?v=5" aria-hidden="true"></video>
+              <div class="event-transcript">
+                <p>Saturday &middot; 5 December 2026</p>
+                <h3>Ring Exchange</h3>
+                <p>Ring Ceremony &middot; 6:30 PM onwards</p>
+                <h4>Shree Jyoti Kalyan Mantapa</h4>
+              </div>
+            </div>
+            <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Shree+Jyoti+Kalyan+Mantapa" target="_blank" rel="noopener noreferrer" aria-label="Explore Venue for Ring Ceremony: Shree Jyoti Kalyan Mantapa">Explore Venue <span aria-hidden="true">&#x2197;</span></a>
+          </article>
+
+          <!-- Wedding Ceremony -->
+          <article class="event-entry" id="event-wedding">
+            <div class="event-card">
+              <video class="event-film" loop muted playsinline preload="metadata" poster="assets/wedding-ceremony.jpg?v=5" src="assets/wedding-ceremony.mp4?v=5" aria-hidden="true"></video>
+              <div class="event-transcript">
+                <p>Sunday &middot; 6 December 2026</p>
+                <h3>Our Forever Begins</h3>
+                <p>Mangalya Muhurtam &middot; 9:30 AM onwards</p>
+                <h4>Shree Jyoti Kalyan Mantapa</h4>
+              </div>
+            </div>
+            <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Shree+Jyoti+Kalyan+Mantapa" target="_blank" rel="noopener noreferrer" aria-label="Explore Venue for Wedding Ceremony: Shree Jyoti Kalyan Mantapa">Explore Venue <span aria-hidden="true">&#x2197;</span></a>
+          </article>
+
+          <!-- Wedding Reception -->
+          <article class="event-entry" id="event-reception">
+            <div class="event-card">
+              <video class="event-film" loop muted playsinline preload="metadata" poster="assets/reception.jpg?v=5" src="assets/reception.mp4?v=5" aria-hidden="true"></video>
+              <div class="event-transcript">
+                <p>Sunday &middot; 6 December 2026</p>
+                <h3>Reception</h3>
+                <p>Wedding Reception &middot; 12:10 PM onwards</p>
+                <h4>Shree Jyoti Kalyan Mantapa</h4>
+              </div>
+            </div>
+            <a class="map" href="https://www.google.com/maps/search/?api=1&amp;query=Shree+Jyoti+Kalyan+Mantapa" target="_blank" rel="noopener noreferrer" aria-label="Explore Venue for Reception: Shree Jyoti Kalyan Mantapa">Explore Venue <span aria-hidden="true">&#x2197;</span></a>
+          </article>
+        </div>
+      </section>
+
+      <!-- Gratitude / Thanks Section -->
+      <section class="thanks section">
+        <img class="section-divider" src="assets/divider-love.webp" alt="" aria-hidden="true" width="2172" height="724" loading="lazy">
+        <p class="eyebrow">WITH ALL OUR LOVE</p>
+        <h2>It wouldn&rsquo;t be the same<br>without you.</h2>
+        <p>Thank you for being a part of our story.<br>Your presence and blessings will make<br>our celebration truly unforgettable.</p>
+        <div class="signature">Kiran &amp; Megha</div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="family-closing" inert aria-hidden="true">
+    <p>WITH WARM REGARDS</p>
+    <h2>The Odugoudra &amp;<br>Kagalagomb Families</h2>
+    <span>SHREE JYOTI KALYAN MANTAPA &middot; 2026</span>
+    <a href="#" aria-label="Back to top">&uarr;</a>
+  </footer>
+
+  <!-- Sound Toggle Button -->
+  <button type="button" id="sound" aria-label="Play music" title="Play music">
+    <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9h4l5-4v14l-5-4H3z"/>
+      <g class="sound-waves"><path d="M15 8a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></g>
+      <path class="sound-cross" d="m16 9 6 6m0-6-6 6"/>
+    </svg>
+  </button>
+</body>
+</html>
