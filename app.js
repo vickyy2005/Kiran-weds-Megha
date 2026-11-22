@@ -205,45 +205,77 @@ if (video) {
   const message = document.querySelector('#film-message');
 
   function updateSoundButton() {
+    if (!music || !sound) return;
     const audible = !music.paused && !music.muted;
     sound.classList.toggle('audible', audible);
     sound.title = audible ? 'Mute music' : 'Play music';
     sound.setAttribute('aria-label', audible ? 'Mute music' : 'Play music');
   }
 
+  // Mobile video setup
+  video.defaultMuted = true;
   video.muted = true;
-  video.play().catch(() => {
-    video.controls = true;
-    if (scrollButton) scrollButton.hidden = false;
-  });
-  music.play().catch(() => {
-    updateSoundButton();
-    document.addEventListener('click', event => {
-      if (!sound.contains(event.target) && music.paused) {
-        music.play().catch(updateSoundButton);
-      }
-    }, { once: true });
-  });
+  video.setAttribute('playsinline', '');
+  video.setAttribute('webkit-playsinline', '');
 
-  sound.addEventListener('click', () => {
-    if (music.paused) {
-      music.muted = false;
-      music.play().catch(updateSoundButton);
-    } else {
-      music.muted = !music.muted;
-    }
-    updateSoundButton();
-  });
-  for (const event of ['playing', 'pause', 'volumechange']) {
-    music.addEventListener(event, updateSoundButton);
+  const playPromise = video.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(() => {
+      video.controls = true;
+      if (scrollButton) scrollButton.hidden = false;
+    });
   }
 
-  // Show "Scroll down" button after 2.5s so user can scroll whenever they wish!
+  // Audio autoplay & interaction unlocking
+  function tryStartMusic() {
+    if (music && music.paused) {
+      music.play().then(updateSoundButton).catch(() => {});
+    }
+  }
+
+  if (music) {
+    music.play().then(updateSoundButton).catch(() => {
+      updateSoundButton();
+      const unlockAudio = () => {
+        tryStartMusic();
+        window.removeEventListener('touchstart', unlockAudio);
+        window.removeEventListener('pointerdown', unlockAudio);
+        window.removeEventListener('click', unlockAudio);
+      };
+      window.addEventListener('touchstart', unlockAudio, { passive: true, once: true });
+      window.addEventListener('pointerdown', unlockAudio, { passive: true, once: true });
+      window.addEventListener('click', unlockAudio, { once: true });
+    });
+  }
+
+  if (sound && music) {
+    sound.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (music.paused) {
+        music.muted = false;
+        music.play().then(updateSoundButton).catch(updateSoundButton);
+      } else {
+        music.muted = !music.muted;
+        updateSoundButton();
+      }
+    });
+    for (const event of ['playing', 'pause', 'volumechange']) {
+      music.addEventListener(event, updateSoundButton);
+    }
+  }
+
+  // Show "Scroll down" button quickly (after 2s) so user has complete control
   setTimeout(() => {
     if (scrollButton) scrollButton.hidden = false;
-  }, 2500);
+  }, 2000);
 
-  // Also allow user scrolling to unlock invitation after brief intro (3s)
+  // Safety timer: unlock page after 5s if video is loading slowly or ended event missed
+  setTimeout(() => {
+    if (scrollButton) scrollButton.hidden = false;
+    unlockInvitation();
+  }, 5000);
+
+  // Also unlock when user interacts by wheel or touch after 2.5s
   setTimeout(() => {
     const handleEarlyScroll = () => {
       unlockInvitation();
@@ -252,7 +284,7 @@ if (video) {
     };
     window.addEventListener('wheel', handleEarlyScroll, { passive: true });
     window.addEventListener('touchmove', handleEarlyScroll, { passive: true });
-  }, 3000);
+  }, 2500);
 
   video.addEventListener('timeupdate', () => {
     if (video.currentTime >= 2 && scrollButton) {
@@ -268,15 +300,20 @@ if (video) {
     unlockInvitation();
   });
 
-  video.addEventListener('error', () => {
-    if (message) message.textContent = 'The film could not load. You can scroll down to the invitation.';
+  const handleVideoError = () => {
+    if (message) message.textContent = 'You can scroll down to the invitation.';
     if (scrollButton) scrollButton.hidden = false;
     unlockInvitation();
-  });
+  };
+
+  video.addEventListener('error', handleVideoError);
+  const srcEl = video.querySelector('source');
+  if (srcEl) srcEl.addEventListener('error', handleVideoError);
 
   if (scrollButton) {
     scrollButton.addEventListener('click', () => {
       unlockInvitation();
+      tryStartMusic();
       window.scrollBy({
         top: Math.min(window.innerHeight * 0.7, 520),
         behavior: 'smooth'
@@ -693,7 +730,7 @@ function startRoseLeafShower(originX, originY) {
 
 /* --- Countdown Timer --- */
 function tick() {
-  const target = Date.parse('2026-12-06T16:30:00+05:30');
+  const target = Date.parse('2026-12-06T09:30:00+05:30');
   let s = Math.max(0, Math.floor((target - Date.now()) / 1000));
   for (const [id, unit] of [['days', 86400], ['hours', 3600], ['minutes', 60], ['seconds', 1]]) {
     const el = document.getElementById(id);
@@ -715,6 +752,8 @@ function updateEventPlayback(film) {
   if (document.hidden || !visibleFilms.has(film)) {
     film.pause();
   } else {
+    film.defaultMuted = true;
+    film.muted = true;
     film.play().catch(() => {});
   }
 }
@@ -732,6 +771,10 @@ const eventObserver = new IntersectionObserver(entries => {
 }, { threshold: [0, 0.01] });
 
 for (const film of eventFilms) {
+  film.defaultMuted = true;
+  film.muted = true;
+  film.setAttribute('playsinline', '');
+  film.setAttribute('webkit-playsinline', '');
   eventObserver.observe(film);
 }
 document.addEventListener('visibilitychange', () => eventFilms.forEach(updateEventPlayback));
