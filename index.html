@@ -23,8 +23,8 @@
   <meta name="theme-color" content="#f1eadf">
   <meta name="description" content="Join the families to celebrate the wedding of Kiran and Megha, 6 December 2026 at Shree Jyoti Kalyan Mantapa.">
   <title>Kiran &amp; Megha | 6 December 2026</title>
-  <link rel="stylesheet" href="style.css?v=18">
-  <script defer src="app.js?v=18"></script>
+  <link rel="stylesheet" href="style.css?v=19">
+  <script defer src="app.js?v=19"></script>
 </head>
 <body>
   <!-- Heart SVG ClipPath for the Scratch Card -->
@@ -47,7 +47,10 @@
         <audio id="music" src="assets/raanjhan-aaya-from-40s.mp3" preload="metadata"></audio>
         <img id="last-frame" src="assets/opening-final.jpg" alt="The illuminated temple at the end of the wedding film" hidden>
         <div id="film-message" role="status"></div>
-        <button id="scroll-down" type="button" hidden>Scroll down <span aria-hidden="true">&darr;</span></button>
+        <div class="film-actions" id="film-actions" hidden>
+          <button id="scroll-down" type="button">Scroll down <span aria-hidden="true">&darr;</span></button>
+          <button id="film-autoscroll" type="button">Auto scroll <span aria-hidden="true">&#x25B6;</span></button>
+        </div>
       </div>
     </section>
 
@@ -214,6 +217,22 @@
     <span>SHREE JYOTI KALYAN MANTAPA &middot; 2026</span>
     <a href="#" aria-label="Back to top">&uarr;</a>
   </footer>
+
+  <!-- Floating Auto Scroll Button -->
+  <button type="button" id="auto-scroll-btn" class="floating-scroll-btn" aria-label="Auto scroll invitation" title="Auto scroll invitation">
+    <span class="scroll-icon-play" aria-hidden="true">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+        <polygon points="6 4 20 12 6 20 6 4"/>
+      </svg>
+    </span>
+    <span class="scroll-icon-pause" aria-hidden="true" style="display:none">
+      <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor">
+        <rect x="5" y="4" width="4" height="16" rx="1"/>
+        <rect x="15" y="4" width="4" height="16" rx="1"/>
+      </svg>
+    </span>
+    <span class="auto-scroll-label">Auto Scroll</span>
+  </button>
 
   <!-- Sound Toggle Button -->
   <button type="button" id="sound" aria-label="Play music" title="Play music">

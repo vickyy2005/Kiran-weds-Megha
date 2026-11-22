@@ -197,12 +197,20 @@ function drawLightParticles(time) {
 }
 
 /* --- Opening Video & Audio Controls --- */
+let tryStartMusic = () => {};
 const video = document.querySelector('#temple');
 if (video) {
   const music = document.querySelector('#music');
   const sound = document.querySelector('#sound');
   const scrollButton = document.querySelector('#scroll-down');
+  const filmActions = document.querySelector('#film-actions');
+  const filmAutoScrollBtn = document.querySelector('#film-autoscroll');
   const message = document.querySelector('#film-message');
+
+  function showFilmControls() {
+    if (filmActions) filmActions.hidden = false;
+    if (scrollButton) scrollButton.hidden = false;
+  }
 
   function updateSoundButton() {
     if (!music || !sound) return;
@@ -222,16 +230,16 @@ if (video) {
   if (playPromise !== undefined) {
     playPromise.catch(() => {
       video.controls = true;
-      if (scrollButton) scrollButton.hidden = false;
+      showFilmControls();
     });
   }
 
   // Audio autoplay & interaction unlocking
-  function tryStartMusic() {
+  tryStartMusic = function() {
     if (music && music.paused) {
       music.play().then(updateSoundButton).catch(() => {});
     }
-  }
+  };
 
   if (music) {
     music.play().then(updateSoundButton).catch(() => {
@@ -269,7 +277,7 @@ if (video) {
   if (filmFrame) {
     filmFrame.style.cursor = 'pointer';
     filmFrame.addEventListener('click', (e) => {
-      if (e.target.closest('#scroll-down') || e.target.closest('#sound')) return;
+      if (e.target.closest('#scroll-down') || e.target.closest('#film-autoscroll') || e.target.closest('#sound') || e.target.closest('#auto-scroll-btn')) return;
       if (video.paused) {
         video.play().catch(() => {});
       }
@@ -277,14 +285,14 @@ if (video) {
     });
   }
 
-  // Show "Scroll down" button quickly (after 2s) so user has complete control
+  // Show film action buttons quickly (after 2s) so user has complete control
   setTimeout(() => {
-    if (scrollButton) scrollButton.hidden = false;
+    showFilmControls();
   }, 2000);
 
   // Safety timer: unlock page after 5s if video is loading slowly or ended event missed
   setTimeout(() => {
-    if (scrollButton) scrollButton.hidden = false;
+    showFilmControls();
     unlockInvitation();
   }, 5000);
 
@@ -300,8 +308,8 @@ if (video) {
   }, 2500);
 
   video.addEventListener('timeupdate', () => {
-    if (video.currentTime >= 2 && scrollButton) {
-      scrollButton.hidden = false;
+    if (video.currentTime >= 2) {
+      showFilmControls();
     }
   });
 
@@ -309,13 +317,13 @@ if (video) {
     const lastImg = document.querySelector('#last-frame');
     if (lastImg) lastImg.hidden = false;
     video.parentElement.classList.add('film-finished');
-    if (scrollButton) scrollButton.hidden = false;
+    showFilmControls();
     unlockInvitation();
   });
 
   const handleVideoError = () => {
     if (message) message.textContent = 'You can scroll down to the invitation.';
-    if (scrollButton) scrollButton.hidden = false;
+    showFilmControls();
     unlockInvitation();
   };
 
@@ -334,6 +342,165 @@ if (video) {
     });
   }
 }
+
+/* --- Auto Scroll Implementation --- */
+let autoScrollActive = false;
+let autoScrollRAF = null;
+let lastScrollTime = 0;
+let scrollSubpixel = 0;
+const SCROLL_SPEED = 50; // pixels per second (~0.83px per frame)
+
+const autoScrollBtn = document.querySelector('#auto-scroll-btn');
+const filmAutoScrollBtn = document.querySelector('#film-autoscroll');
+
+function updateAutoScrollUI(active) {
+  if (!autoScrollBtn) return;
+  autoScrollBtn.classList.toggle('is-scrolling', active);
+  const playIcon = autoScrollBtn.querySelector('.scroll-icon-play');
+  const pauseIcon = autoScrollBtn.querySelector('.scroll-icon-pause');
+  const label = autoScrollBtn.querySelector('.auto-scroll-label');
+
+  if (active) {
+    if (playIcon) playIcon.style.display = 'none';
+    if (pauseIcon) pauseIcon.style.display = 'inline-flex';
+    if (label) label.textContent = 'Pause';
+    autoScrollBtn.setAttribute('aria-label', 'Pause auto scroll');
+    autoScrollBtn.title = 'Pause auto scroll';
+  } else {
+    if (playIcon) playIcon.style.display = 'inline-flex';
+    if (pauseIcon) pauseIcon.style.display = 'none';
+    const isAtEnd = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 25);
+    if (label) label.textContent = isAtEnd ? 'Top ↺' : 'Auto Scroll';
+    autoScrollBtn.setAttribute('aria-label', isAtEnd ? 'Scroll back to top' : 'Start auto scroll');
+    autoScrollBtn.title = isAtEnd ? 'Scroll back to top' : 'Start auto scroll';
+  }
+}
+
+function stopAutoScroll() {
+  if (!autoScrollActive) return;
+  autoScrollActive = false;
+  if (autoScrollRAF) {
+    cancelAnimationFrame(autoScrollRAF);
+    autoScrollRAF = null;
+  }
+  updateAutoScrollUI(false);
+}
+
+function beginScrollLoop() {
+  if (autoScrollActive) return;
+  autoScrollActive = true;
+  lastScrollTime = performance.now();
+  scrollSubpixel = 0;
+  updateAutoScrollUI(true);
+
+  function loop(now) {
+    if (!autoScrollActive) return;
+    const dt = Math.min((now - lastScrollTime) / 1000, 0.1);
+    lastScrollTime = now;
+
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    if (window.scrollY >= maxScroll - 4) {
+      stopAutoScroll();
+      return;
+    }
+
+    const move = SCROLL_SPEED * dt + scrollSubpixel;
+    const px = Math.floor(move);
+    scrollSubpixel = move - px;
+
+    if (px > 0) {
+      window.scrollBy(0, px);
+    }
+
+    autoScrollRAF = requestAnimationFrame(loop);
+  }
+
+  autoScrollRAF = requestAnimationFrame(loop);
+}
+
+function startAutoScroll() {
+  unlockInvitation();
+  tryStartMusic();
+
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+
+  // If already near bottom, scroll smoothly back to couple section first
+  if (window.scrollY >= maxScroll - 20) {
+    const coupleSec = document.querySelector('#couple');
+    if (coupleSec) {
+      coupleSec.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        beginScrollLoop();
+      }, 700);
+      return;
+    }
+  }
+
+  // If at the top (viewing film), glide down to couple section first
+  if (window.scrollY < 80) {
+    const coupleSec = document.querySelector('#couple');
+    if (coupleSec) {
+      coupleSec.scrollIntoView({ behavior: 'smooth' });
+      setTimeout(() => {
+        beginScrollLoop();
+      }, 800);
+      return;
+    }
+  }
+
+  beginScrollLoop();
+}
+
+function toggleAutoScroll() {
+  const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+  if (!autoScrollActive && window.scrollY >= maxScroll - 20) {
+    const coupleSec = document.querySelector('#couple') || document.body;
+    coupleSec.scrollIntoView({ behavior: 'smooth' });
+    updateAutoScrollUI(false);
+    return;
+  }
+
+  if (autoScrollActive) {
+    stopAutoScroll();
+  } else {
+    startAutoScroll();
+  }
+}
+
+if (autoScrollBtn) {
+  autoScrollBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleAutoScroll();
+  });
+}
+
+if (filmAutoScrollBtn) {
+  filmAutoScrollBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    startAutoScroll();
+  });
+}
+
+// Gracefully pause auto-scroll if user manually scrolls, swipes, or interacts
+function pauseOnUserGesture(e) {
+  if (!autoScrollActive) return;
+  if (e && e.target && e.target.closest && (e.target.closest('#auto-scroll-btn') || e.target.closest('#film-autoscroll') || e.target.closest('#sound'))) {
+    return;
+  }
+  stopAutoScroll();
+}
+
+window.addEventListener('wheel', pauseOnUserGesture, { passive: true });
+window.addEventListener('touchmove', pauseOnUserGesture, { passive: true });
+window.addEventListener('pointerdown', (e) => {
+  if (e.target && e.target.closest && (e.target.closest('#auto-scroll-btn') || e.target.closest('#film-autoscroll') || e.target.closest('#sound'))) return;
+  if (autoScrollActive) stopAutoScroll();
+}, { passive: true });
+window.addEventListener('keydown', (e) => {
+  if (['ArrowUp', 'ArrowDown', 'PageUp', 'PageDown', 'Home', 'End', ' '].includes(e.key)) {
+    pauseOnUserGesture(e);
+  }
+});
 
 /* --- Scratch Card Interactive Logic --- */
 const canvas = document.querySelector('#scratch');
