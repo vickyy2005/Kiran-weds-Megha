@@ -407,8 +407,10 @@ if (canvas) {
     revealed = true;
     wrap.classList.add('revealed');
     if (button) {
-      button.textContent = '6 December 2026 · Save the date';
+      button.textContent = '📅 Save the Date to Calendar ↗';
     }
+    const calActions = document.querySelector('#calendar-actions');
+    if (calActions) calActions.hidden = false;
     canvas.setAttribute('aria-hidden', 'true');
 
     // Shower erupts directly from the heart coordinates!
@@ -417,6 +419,45 @@ if (canvas) {
     const hy = r.top + r.height * 0.45;
     sparkles(hx, hy, 35);
     startRoseLeafShower(hx, hy);
+  }
+
+  function openGoogleCalendar() {
+    const title = encodeURIComponent("Wedding of Kiran & Megha");
+    const details = encodeURIComponent("Join us in celebrating the wedding ceremony of Kiran and Megha.\nVenue: Shree Jyoti Kalyan Mantapa\nMangalya Muhurtam: 9:30 AM onwards\nReception: 12:10 PM onwards");
+    const location = encodeURIComponent("Shree Jyoti Kalyan Mantapa");
+    const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=20261206T040000Z/20261206T123000Z&details=${details}&location=${location}`;
+    window.open(gcalUrl, '_blank', 'noopener,noreferrer');
+  }
+
+  function downloadIcsCalendar() {
+    const icsData = [
+      'BEGIN:VCALENDAR',
+      'VERSION:2.0',
+      'PRODID:-//Kiran and Megha Wedding//EN',
+      'CALSCALE:GREGORIAN',
+      'METHOD:PUBLISH',
+      'BEGIN:VEVENT',
+      'UID:wedding-kiran-megha-20261206@wedding',
+      'DTSTAMP:20261122T000000Z',
+      'DTSTART:20261206T040000Z',
+      'DTEND:20261206T123000Z',
+      'SUMMARY:Wedding of Kiran & Megha',
+      'DESCRIPTION:Join us to celebrate the wedding ceremony of Kiran and Megha.\\nVenue: Shree Jyoti Kalyan Mantapa\\nMangalya Muhurtam: 9:30 AM onwards\\nReception: 12:10 PM onwards',
+      'LOCATION:Shree Jyoti Kalyan Mantapa',
+      'STATUS:CONFIRMED',
+      'END:VEVENT',
+      'END:VCALENDAR'
+    ].join('\r\n');
+
+    const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kiran-weds-megha.ics';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   }
 
   function point(e) {
@@ -471,8 +512,32 @@ if (canvas) {
 
   canvas.addEventListener('pointerup', finish);
   canvas.addEventListener('pointercancel', () => { drawing = false; lastPoint = null; });
+
   if (button) {
-    button.addEventListener('click', triggerReveal);
+    button.addEventListener('click', () => {
+      if (!revealed) {
+        triggerReveal();
+      } else {
+        openGoogleCalendar();
+      }
+    });
+  }
+
+  const dateRevealEl = document.querySelector('.date-reveal');
+  if (dateRevealEl) {
+    dateRevealEl.addEventListener('click', () => {
+      if (revealed) {
+        openGoogleCalendar();
+      }
+    });
+  }
+
+  const icsBtn = document.querySelector('#ics-btn');
+  if (icsBtn) {
+    icsBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      downloadIcsCalendar();
+    });
   }
 
   paint();
