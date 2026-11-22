@@ -406,11 +406,7 @@ if (canvas) {
     if (revealed) return;
     revealed = true;
     wrap.classList.add('revealed');
-    if (button) {
-      button.textContent = '📅 Save the Date to Calendar ↗';
-    }
-    const calActions = document.querySelector('#calendar-actions');
-    if (calActions) calActions.hidden = false;
+    if (button) button.style.display = 'none';
     canvas.setAttribute('aria-hidden', 'true');
 
     // Shower erupts directly from the heart coordinates!
@@ -515,20 +511,8 @@ if (canvas) {
 
   if (button) {
     button.addEventListener('click', () => {
-      if (!revealed) {
-        triggerReveal();
-      } else {
-        openGoogleCalendar();
-      }
-    });
-  }
-
-  const dateRevealEl = document.querySelector('.date-reveal');
-  if (dateRevealEl) {
-    dateRevealEl.addEventListener('click', () => {
-      if (revealed) {
-        openGoogleCalendar();
-      }
+      triggerReveal();
+      button.style.display = 'none';
     });
   }
 
