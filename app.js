@@ -524,6 +524,12 @@ if (canvas) {
     });
   }
 
+  wrap.addEventListener('click', () => {
+    if (!revealed) {
+      triggerReveal();
+    }
+  });
+
   paint();
   new ResizeObserver(paint).observe(wrap);
 }
