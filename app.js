@@ -264,6 +264,19 @@ if (video) {
     }
   }
 
+  // Tap anywhere on opening film to play video and start music
+  const filmFrame = video.closest('.film-frame');
+  if (filmFrame) {
+    filmFrame.style.cursor = 'pointer';
+    filmFrame.addEventListener('click', (e) => {
+      if (e.target.closest('#scroll-down') || e.target.closest('#sound')) return;
+      if (video.paused) {
+        video.play().catch(() => {});
+      }
+      tryStartMusic();
+    });
+  }
+
   // Show "Scroll down" button quickly (after 2s) so user has complete control
   setTimeout(() => {
     if (scrollButton) scrollButton.hidden = false;
@@ -776,5 +789,21 @@ for (const film of eventFilms) {
   film.setAttribute('playsinline', '');
   film.setAttribute('webkit-playsinline', '');
   eventObserver.observe(film);
+
+  const card = film.closest('.event-card');
+  if (card) {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.map')) return;
+      if (film.paused) {
+        film.play().catch(() => {});
+      } else {
+        film.pause();
+      }
+    });
+    card.addEventListener('mouseenter', () => {
+      film.play().catch(() => {});
+    });
+  }
 }
 document.addEventListener('visibilitychange', () => eventFilms.forEach(updateEventPlayback));
